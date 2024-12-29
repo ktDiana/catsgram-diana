@@ -1,13 +1,12 @@
 package com.practice.catsgram.service;
 
-import com.practice.catsgram.exception.InvalidEmailException;
-import com.practice.catsgram.exception.UserAlreadyExistsException;
+import com.practice.catsgram.exceptions.InvalidEmailException;
+import com.practice.catsgram.exceptions.UserAlreadyExistsException;
+import com.practice.catsgram.exceptions.UserNotFoundException;
 import com.practice.catsgram.model.User;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +44,22 @@ public class UserService {
         return user;
     }
 
-    public User findByEmail(String email) {
-        return users.get(email);
+    public User update(User user) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new InvalidEmailException("Почта не может быть пустой");
+        }
+        users.put(user.getEmail(), user);
+        return user;
     }
 
+    public User findByEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new UserNotFoundException("Пользователь не найден: " + email);
+        }
+        User user = users.get(email);
+        if (user == null) {
+            throw new UserNotFoundException("Пользователь не найден: " + email);
+        }
+        return user;
+    }
 }

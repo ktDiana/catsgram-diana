@@ -1,6 +1,7 @@
 package com.practice.catsgram.service;
 
-import com.practice.catsgram.exception.UserNotFoundException;
+import com.practice.catsgram.exceptions.PostNotFoundException;
+import com.practice.catsgram.exceptions.UserNotFoundException;
 import com.practice.catsgram.model.Post;
 import com.practice.catsgram.model.User;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class PostService {
     public Post create(Post post) {
         User user = userService.findByEmail(post.getAuthor());
         if (user == null) {
-            throw new UserNotFoundException("Пользователь с таким email не найден");
+            throw new UserNotFoundException(String.format("Пользователь %s не найден", post.getAuthor()));
         }
         post.setId(nextId++);
         posts.add(post);
@@ -35,17 +36,16 @@ public class PostService {
         posts.removeIf(post -> post.getAuthor().equalsIgnoreCase(author));
     }
 
-    public Post findById(int id) {
-        for (Post post : posts) {
-            if (post.getId() == id) {
-                return post;
-            }
-        }
-        return null;
+    public Post findPostById(int id) {
+        return posts.stream()
+                .filter(post -> post.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new PostNotFoundException(String.format("Пост №%d не найден", id)));
+    }
 
 //        return posts.stream()
 //                .filter(post -> post.getId() == id)
 //                .findFirst()
 //                .orElse(null);
-    }
 }
+

@@ -1,13 +1,11 @@
 package com.practice.catsgram.controller;
 
-import com.practice.catsgram.exception.InvalidEmailException;
-import com.practice.catsgram.exception.UserAlreadyExistsException;
+import com.practice.catsgram.model.Post;
 import com.practice.catsgram.model.User;
 import com.practice.catsgram.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -33,6 +31,11 @@ public class UserController {
     @GetMapping     // GET /users
     public Collection<User> findAll() {
         return userService.findAll();
+    }
+
+    @GetMapping("/{email}")
+    public User findByEmail(@PathVariable String email) {
+        return userService.findByEmail(email);
     }
 
     @PostMapping
